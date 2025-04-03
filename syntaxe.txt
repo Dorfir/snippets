@@ -1,0 +1,46 @@
+// ------------------------------------------------------------------------------------------------------------------------------------------
+// Optional chaining (?.)
+// ------------------------------------------------------------------------------------------------------------------------------------------
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining
+
+The optional chaining (?.) operator accesses an object's property or calls a function. 
+If the object accessed or function called using this operator is undefined or null, 
+the expression short circuits and evaluates to undefined instead of throwing an error.
+
+
+const adventurer = {
+  name: "Alice",
+  cat: {
+    name: "Dinah",
+  },
+};
+
+const dogName = adventurer.dog?.name;
+console.log(dogName);
+// Expected output: undefined
+
+console.log(adventurer.someNonExistentMethod?.());
+// Expected output: undefined
+
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------
+// Nullish coalescing operator (??)
+// ------------------------------------------------------------------------------------------------------------------------------------------
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing
+
+
+The nullish coalescing (??) operator is a logical operator that returns its right-hand side operand when its left-hand side operand is null or undefined, 
+and otherwise returns its left-hand side operand.
+
+
+const foo = null ?? "default string";
+console.log(foo);
+// Expected output: "default string"
+
+const baz = 0 ?? 42;
+console.log(baz);
+// Expected output: 0
+

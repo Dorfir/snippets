@@ -1,0 +1,45 @@
+https://angular.fr/pipes/async
+
+// user-list.component.ts
+import { Component } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+@Component({
+  selector: 'app-user-list',
+  standalone: true,
+  imports: [AsyncPipe],
+  template: `
+    <ul>
+      @for (user of users$ | async ; track user.id) {
+        <li>{{ user.name }} ({{ user.email }})</li>
+      }
+    </ul>
+  `
+})
+export class UserListComponent {
+  users$: Observable<User[]>;
+
+  constructor(private http: HttpClient) {
+    // Récupération de la liste des utilisateurs depuis l'URL https://jsonplaceholder.typicode.com/users
+    this.users$ = this.http.get<User[]>('https://jsonplaceholder.typicode.com/users')
+  }
+}
+
+
+-- app.config.ts
+
+import {ApplicationConfig} from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+import {provideHttpClient} from "@angular/common/http";
+export const appConfig: ApplicationConfig = {
+providers: [provideHttpClient(), provideRouter(routes)]
+};

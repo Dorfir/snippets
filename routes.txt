@@ -1,0 +1,24 @@
+const routes: Routes = [
+  { path: "home", component: HomeComponent },
+  { path: "", redirectTo: "home", pathMatch: "full" },
+  { path: "**", redirectTo: "home", pathMatch: "full" },
+];
+
+//call function
+this.router.navigate(["/planning/capplanning"], {
+  skipLocationChange: true,
+});
+
+
+//template 
+<a [routerLink]="['/details', housingLocation.id]" [skipLocationChange]="true">Learn More</a>
+
+
+//url param 
+route: ActivatedRoute = inject(ActivatedRoute);
+housingService = inject(HousingService);
+housingLocation: HousingLocation | undefined;
+constructor() {
+    const housingLocationId = Number(this.route.snapshot.params['id']);
+    this.housingLocation = this.housingService.getHousingLocationById(housingLocationId);
+}
