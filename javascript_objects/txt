@@ -1,0 +1,406 @@
+https://medium.com/hackernoon/object-oriented-programming-in-vanilla-javascript-f3945b15f08a
+
+
+
+Search
+Write
+Sign up
+
+Sign in
+
+
+
+HackerNoon.com
+HackerNoon.com
+Elijah McClain, George Floyd, Eric Garner, Breonna Taylor, Ahmaud Arbery, Michael Brown, Oscar Grant, Atatiana Jefferson, Tamir Rice, Bettie Jones, Botham Jean
+
+Follow publication
+
+Top highlight
+
+Object-oriented programming in vanilla JavaScript
+Shlomi Nissan
+HackerNoon.com
+Shlomi Nissan
+
+·
+Follow
+
+Published in
+HackerNoon.com
+
+·
+6 min read
+·
+Oct 17, 2017
+2.8K
+
+
+9
+
+
+
+
+JavaScript is a powerful object-oriented programming (OOP) language, however, unlike many traditional programming languages, it uses a prototype-based OOP model which makes its syntax foreign to most developers. In addition, JavaScript also treats functions as first-class objects which may cause further confusion amongst developers who are not familiar with these concepts.
+
+It’s possible to side-step these concepts by adapting another programming language, such as TypeScript, which has a familiar syntax and offer additional features, however, such languages compile to plain JavaScript anyway so equipping yourself with this knowledge will not just help you understand how they work, but also when it’s suitable to use them.
+
+Here’s a list of the topics we’re going to be covering:
+
+Namespacing
+Objects
+Objects Literals
+Construction Functions
+Inheritance
+
+Namespacing
+With an ever-growing number of third-party libraries, frameworks and dependencies on the web, namespacing is imperative to JavaScript development as we try to avoid collisions between objects and variables in the global namespace.
+
+Unfortunately, JavaScript doesn’t have built-in support for namespacing but we can use objects to achieve the same result. There are many different patterns to implementing a namespace in JavaScript but we’re going to cover nested namespacing, which is certainly the most common one.
+
+The nested namespacing pattern uses an object literal to bundle up functionality under a unique, application specific name. We can start by creating a global object and assign it to a variable like this:
+
+var MyApp = MyApp || {};
+We can use same technique to create sub-namespaces as well:
+
+MyApp.users = MyApp.user || {};
+Once we’ve got a container, we can use it to define methods and properties and use them in our global namespace without the risking collision with existing definitions.
+
+MyApp.users = {
+    // properties
+    existingUsers: [...],
+    // methods
+    renderUsersHTML: function() {
+      ...
+    }
+};
+An in-dept overview of namespacing patterns in JavaScript can be found here: Essential JavaScript Namespacing Patterns.
+
+Objects
+If you have ever written code in JavaScript, you have been using objects at some capacity. JavaScript has three distinguishable types of objects:
+
+Native Objects
+Native objects are part of the language specification. They’re available to us regardless of the client our JavaScript code is running on. Examples of native objects would be: Array, Date, and Math. For a complete list, refer to JavaScript built-in objects reference
+
+var users = Array(); // Array is a native object
+Host Objects
+Unlike native objects, host objects are made available by the client our JavaScript code is running on. Different clients have different host objects that allow us, in most cases, to interact with it. For example, if we’re writing code for a browser, it provides us with host objects such as: window, document, location and history.
+
+document.body.innerHTML = 'Hello'; // document is a host object
+User Objects
+User objects—sometimes referred to as contributed objects—are custom objects we define at run time. There are two ways to declare our own objects in JavaScript and we will cover them next.
+
+Object Literals
+We already touched object literals when we covered namespacing, but it’s time for a clear definition: An object literal is a comma-separated list of name-value pairs wrapped in curly braces. They can bundle up properties and methods, and like any other object in JavaScript, they can be passed to, and returned from functions. Here’s another example of an object literal:
+
+var dog = {
+  // properties
+  breed: ‘Bulldog’,
+  // methods
+  bark: function() {
+    console.log(“Woof!”);
+  },
+};
+// accessing methods and properties
+dog.bark();
+Object literals are singletons. The most common use for them is encapsulating code and enclosing it in a tidy package to avoid collision with variables and objects on the global scope (namespacing), and pass configurations to plugins and objects.
+
+Object literals are useful but they can’t be instantiated or inherited from. If we want to leverage these features, we need to explore another method of creating objects in JavaScript.
+
+Constructor Functions
+Functions in JavaScript are considered first-class citizens which means they support the same operations that are available to other entities. In JavaScript terms, this means that functions can be constructed at run-time, passed as arguments, returned from other functions, and be assigned to variables. Furthermore, they can have their own properties and methods. This allows us to use functions as objects that can be instantiated and inherited from.
+
+Here’s an example of using defining an object using a constructor function:
+
+function User( name, email ) {
+  // properties
+  this.name = name;
+  this.email = email;
+  // methods
+  this.sayHey = function() {
+   console.log( “Hey, I’m “ + this.name );
+  };
+}
+// instantiating the object
+var steve = new User( “Steve”, “steve@hotmail.com” );
+// accessing methods and properties
+steve.sayHey();
+Creating a constructor function is similar to creating a regular function with one exception: we’re using the this keyword to declare properties and methods.
+
+Instantiating constructor functions using the new keyword is similar to instantiating objects in traditional class-based programming languages, however, there is one problem that may not be apparent at first.
+
+When we’re creating new objects using the new keyword in JavaScript, we’re running the function block again and again which causes our script to declare anonymous functions for each method, EVERY TIME. This will cause our program to consume more memory then it should, and it could have serious implications on performance, depending on the scale of your program.
+
+Luckily, there’s a better way to attach methods to constructor functions without polluting the global scope.
+
+Methods and Prototypes
+JavaScript is a prototypal programming language, which means we can use prototypes as templates for objects. This will help us avoid the anonymous functions trap as we scale our applications. prototype is a special property in JavaScript that let’s us add new methods to an object.
+
+Here’s a rewrite of our previous example using prototypes:
+
+function User( name, email ) {
+  // properties
+  this.name = name;
+  this.email = email;
+}
+// methods
+User.prototype.sayHey = function() {
+  console.log( “Hey, I’m “ + this.name );
+}
+// instantiating the object
+var steve = new User( “Steve”, “steve@hotmail.com” );
+// accessing methods and properties
+steve.sayHey();
+In this example, sayHey() will be shared through all instances of the User object.
+
+Inheritance
+Prototypes are also used for inheritance through the prototype chain. In JavaScript, every object has a prototype, and since a prototype is just another object, it has a prototype as well, and so on… until we reach a prototype with a value of null—the final link in the prototype chain.
+
+When we access a method or property, JavaScript checks if it’s defined within the object definition, if it isn’t, it will check the prototype and see if it’s defined there. If it can’t find it there either, it will keep going down the prototype chain until it’s found, or until it reaches the end of the chain.
+
+Here’s how it works:
+
+// the user object
+function User( name, email, role ) {
+  this.name = name;
+  this.email = email;
+  this.role = role;
+}
+User.prototype.sayHey = function() {
+  console.log( “Hey, I’m an “ + role);
+}
+// the editor object inherits from user
+function Editor( name, email ) {
+   // The Call function is calling the Constructor of User
+   // and decorates Editor with the same properties
+   User.call(this, name, email, "admin"); 
+}
+// To set up the prototype chain, we create a new object using
+// the User prototype and assign it to the Editor prototype
+Editor.prototype = Object.create( User.prototype );
+// Now we can access all the properties and methods
+// of User from the Editor object
+var david = new Editor( "David", "matthew@medium.com" );
+david.sayHey();
+Prototypal inheritance may take some time getting used to, but it’s an important concept to grasp in order to master OOP in vanilla JavaScript. While it is often considered to be one of JavaScript’s weaknesses, the prototypal inheritance model is in fact more powerful than the classic model. It is, for example, fairly trivial to build a classic inheritance model on top of a prototypal model.
+
+ECMAScript 6 introduced a new set of keywords implementing classes. Although these constructs looks like class-based languages, they are not the same. JavaScript remains prototype-based.
+
+JavaScript has evolved over a long period of time, and during this time different practices that should be avoided by today’s standard have been adopted by a variety of developers. With the introduction of ES2015, this is slowly starting to change, however, many developers still stick to their old ways which compromises the relevancy of their code. Understanding and applying OOP programming in JavaScript is imperative to writing sustainable code, and I hope this brief introduction will help you achieve that.
+
+JavaScript
+Object Oriented
+Javascript Development
+Vanilla Javascript
+2.8K
+
+
+9
+
+
+HackerNoon.com
+Published in HackerNoon.com
+466K Followers
+·
+Last published May 27, 2020
+Elijah McClain, George Floyd, Eric Garner, Breonna Taylor, Ahmaud Arbery, Michael Brown, Oscar Grant, Atatiana Jefferson, Tamir Rice, Bettie Jones, Botham Jean
+
+Follow
+Shlomi Nissan
+Written by Shlomi Nissan
+583 Followers
+·
+11 Following
+Senior software engineer with a penchant for visual design
+
+Follow
+Responses (9)
+
+Write a response
+
+What are your thoughts?
+
+Cancel
+Respond
+
+Also publish to my profile
+
+sakamo
+sakamo
+
+Oct 24, 2017
+
+
+Hi Shlomi ! I’m Ren a backend Engineer in Japan.
+I am writing to ask for permission to translate your post “ Object-oriented programming in vanilla JavaScript” .
+The post is great and useful! so I want to translate and spread the post for Japanese…more
+51
+
+Reply
+
+Vizay Soni
+Vizay Soni
+
+Oct 22, 2017
+
+
+One of the best explanation about OOP JS, Thanks.
+However, While assigning
+`Editor.prototype = Object.create( User.prototype );`
+It will override the constructor of Editor, so we have to re-assign constructor as follows:
+`Editor.prototype.constructor = Editor;`
+1
+
+Reply
+
+Paul
+Paul
+
+Aug 16, 2019
+
+
+then
+
+than
+Reply
+
+See all responses
+More from Shlomi Nissan and HackerNoon.com
+Mistakes developers make using JavaScript Promises
+Shlomi Nissan
+Shlomi Nissan
+
+Mistakes developers make using JavaScript Promises
+Promises were introduced in ES6 to improve the way we handle asynchronous tasks in JavaScript. A promise is simply an object that serves…
+Nov 25, 2018
+120
+How to query JSONB, beginner sheet cheat
+HackerNoon.com
+In
+
+HackerNoon.com
+
+by
+
+Raphaël Huchet
+
+How to query JSONB, beginner sheet cheat
+Let’s say we have to query a user table with a metadata JSONB column on a PostgreSQL 9.5+ database.
+Mar 30, 2017
+3K
+30
+As a Product Manager, this is what I wish I knew about product launches 🚀
+HackerNoon.com
+In
+
+HackerNoon.com
+
+by
+
+Pavan Teja
+
+As a Product Manager, this is what I wish I knew about product launches 🚀
+It takes a lot of work by various teams to ship a product(s). As a product manager you would be pulled many ways, spread across different…
+Sep 28, 2018
+89
+Donella Meadows recommendations for how to dance with and intervene in systems
+HackerNoon.com
+In
+
+HackerNoon.com
+
+by
+
+Daniel Christian Wahl
+
+Donella Meadows recommendations for how to dance with and intervene in systems
+Donella H.Meadows was one of the co-authors of the 1972 Club of Rome Report on Limits to Growth which contributed to putting the issue of…
+Oct 4, 2017
+2.4K
+10
+See all from Shlomi Nissan
+See all from HackerNoon.com
+Recommended from Medium
+Loops in Python {1}
+Saro
+Saro
+
+Loops in Python {1}
+Hello,
+
+Dec 13, 2024
+1
+Why Your Colleagues Secretly Hate Your ‘Clean Code’ (And They’re Right)
+Coders Stop
+Coders Stop
+
+Why Your Colleagues Secretly Hate Your ‘Clean Code’ (And They’re Right)
+Confession time: I used to be that developer — the one who’d refactor perfectly functional code into “clean code” masterpieces, then sit…
+
+6d ago
+1K
+59
+The Best CSS One-Liner 90% of Developers Aren’t Using in 2025
+Karsten Biedermann
+Karsten Biedermann
+
+The Best CSS One-Liner 90% of Developers Aren’t Using in 2025
+Do you want more? Let’s check out my project, CSSToday: csstoday.dev/
+5d ago
+142
+4
+Stop Using useEffect Like This — Here’s What React Architects Do Instead
+The Syntax Diaries
+In
+
+The Syntax Diaries
+
+by
+
+Amaresh Adak
+
+Stop Using useEffect Like This — Here’s What React Architects Do Instead
+Why Top Developers Are Moving Beyond useEffect (And You Should Too)
+
+Mar 30
+206
+5
+A Beginner’s Guide to Functional Programming in JavaScript
+Potato Script
+Potato Script
+
+A Beginner’s Guide to Functional Programming in JavaScript
+Functional programming (FP) is gaining popularity in the JavaScript community for its simplicity and effectiveness in writing clean…
+Nov 25, 2024
+51
+Output-Based JavaScript Interview Questions
+Vitaliy Korzhenko
+Vitaliy Korzhenko
+
+Output-Based JavaScript Interview Questions
+1. Object Property Access
+
+Oct 24, 2024
+129
+See more recommendations
+Help
+
+Status
+
+About
+
+Careers
+
+Press
+
+Blog
+
+Privacy
+
+Rules
+
+Terms
+
+Text to speech
+
+Impossible d'établir une connexion avec le service reCAPTCHA. Veuillez vérifier votre connexion Internet, puis actualiser la page pour afficher une image reCAPTCHA.
